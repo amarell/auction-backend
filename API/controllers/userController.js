@@ -2,6 +2,7 @@ const e = require("express");
 const User = require("../models/userModel");
 const { registerValidation, loginValidation } = require("./../../validation");
 const bcrypt = require("bcryptjs");
+const jwt = require("./../utilities/jwt");
 
 module.exports.register = async (req, res) => {
   // validate data
@@ -53,7 +54,7 @@ module.exports.login = async (req, res) => {
 
   if (!user) {
     return res.status(400).json({
-      error: "Email is wrong.",
+      error: "Email or password is wrong.",
     });
   }
 
@@ -61,11 +62,13 @@ module.exports.login = async (req, res) => {
 
   if (!validPassword) {
     return res.status(400).json({
-      error: "Password is wrong.",
+      error: "Email or password is wrong.",
     });
   }
 
-  res.status(200).json({
+  const token = jwt.sign(user);
+
+  res.header("Authorization", token).status(200).json({
     status: "Success",
   });
 };
