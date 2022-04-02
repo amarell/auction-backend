@@ -1,32 +1,36 @@
-let express = require("express")
-let mongoose = require("mongoose")
+let express = require("express");
+let mongoose = require("mongoose");
 let port = process.env.PORT || 3000;
 let config = require("./config.js");
-let cors = require("cors")
+let cors = require("cors");
 require("dotenv").config();
+
+// Import routes here
+let authRoutes = require("./API/routes/auth.js");
 
 const app = express();
 
-app.use(cors())
+app.use(cors());
+app.use(express.json());
+app.use(
+  express.urlencoded({
+    extended: true,
+  })
+);
 
 app.listen(port, function () {
-    console.log(process.env.DB_PATH)
-    console.log("Listening on port " + port)
-})
-
-app.use(express.urlencoded({
-    extended: true
-}));
-
-app.use(express.json())
+  console.log("Listening on port " + port);
+});
 
 // Here we will add all the routes!
-// app.use("/api", userRoute)
+app.use("/api", authRoutes);
 
 const mongo = mongoose.connect(process.env.DB_PATH, config.DB_OPTIONS);
 
-mongo.then(() => {
+mongo
+  .then(() => {
     console.log("Connected");
-}).catch(e => {
+  })
+  .catch((e) => {
     console.log(e.message);
-}) 
+  });
