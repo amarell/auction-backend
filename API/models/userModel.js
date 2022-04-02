@@ -17,7 +17,8 @@ let userSchema = new mongoose.Schema({
   },
   profile_picture: {
     type: String,
-    default: "https://image.flaticon.com/icons/png/512/3048/3048189.png",
+    default:
+      "https://cdn-icons.flaticon.com/png/512/1144/premium/1144709.png?token=exp=1648896007~hmac=8fec9c21f3c232dd89ccca64cf0dcc51",
   },
   role: {
     type: String,
