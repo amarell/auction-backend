@@ -3,6 +3,7 @@ const User = require("../models/userModel");
 const { registerValidation, loginValidation } = require("./../../validation");
 const bcrypt = require("bcryptjs");
 const jwt = require("./../utilities/jwt");
+const { authorize } = require("../routes/protectedRoute");
 
 module.exports.register = async (req, res) => {
   // validate data
@@ -68,12 +69,17 @@ module.exports.login = async (req, res) => {
 
   const token = jwt.sign(user);
 
-  res.header("Authorization", token).status(200).json({
+  res.header("authorization", token).status(200).json({
     status: "Success",
+    token,
   });
 };
 
 module.exports.getUsers = (req, res) => {
+  let auth = authorize(req);
+  if (auth === false) {
+    return res.status(401).json("Access denied");
+  }
   User.find((err, users) => {
     if (err) {
       res.status(400).json({
