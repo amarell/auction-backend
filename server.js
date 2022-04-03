@@ -9,6 +9,7 @@ require("dotenv").config();
 let authRoutes = require("./API/routes/auth.js");
 let userRoutes = require("./API/routes/userRoutes.js");
 let auctionRoutes = require("./API/routes/auctionRoutes.js");
+let bidRoutes = require("./API/routes/bidRoutes.js");
 
 const app = express();
 
@@ -28,6 +29,7 @@ app.listen(port, function () {
 app.use("/api", authRoutes);
 app.use("/api", userRoutes);
 app.use("/api", auctionRoutes);
+app.use("/api", bidRoutes);
 
 const mongo = mongoose.connect(process.env.DB_PATH, config.DB_OPTIONS);
 
