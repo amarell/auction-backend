@@ -1,10 +1,24 @@
 const Bid = require("../models/bidModel");
+const Auction = require("../models/auctionModel");
 const { authorize } = require("../routes/protectedRoute");
 const jwt = require("../utilities/jwt");
 
-// module.exports.getBidsForSpecificAuction = (req, res) => {};
+const findAuctionAndAddBidToIt = async (id, bid) => {
+  const auction = await Auction.findById(id);
 
-module.exports.postBid = (req, res) => {
+  const bids = auction.bids;
+  bids.push(bid);
+
+  const update = await Auction.findByIdAndUpdate(
+    id,
+    { bids: bids },
+    { new: true }
+  );
+
+  return update;
+};
+
+module.exports.postBid = async (req, res) => {
   let auth = authorize(req);
   if (auth === false) {
     return res.status(401).json("Access denied");
@@ -18,15 +32,12 @@ module.exports.postBid = (req, res) => {
     auction_id: req.body.auction_id,
   });
 
-  const savedBid = bid.save((err, savedBid) => {
-    if (err) {
-      res.status(400).json({
-        status: "Something went wrong",
-      });
-    } else {
-      res.status(200).json({
-        data: savedBid,
-      });
-    }
-  });
+  const savedBid = await bid.save();
+  const auction = await findAuctionAndAddBidToIt(req.body.auction_id, savedBid);
+
+  if (auction) {
+    res.json({
+      auction,
+    });
+  }
 };

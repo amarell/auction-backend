@@ -17,6 +17,12 @@ let auctionSchema = new mongoose.Schema({
     },
   ],
   date_ends: Date,
+  bids: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Bid",
+    },
+  ],
 });
 
 let Auction = mongoose.model("Auction", auctionSchema);
