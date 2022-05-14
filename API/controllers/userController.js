@@ -20,7 +20,7 @@ module.exports.register = async (req, res) => {
     });
   }
 
-  // for now not hashing passwords
+  // for now not hashing passwords //
   // const salt = await bcrypt.genSalt();
   // const hashedPassword = await bcrypt.hash(req.body.password, salt);
 
