@@ -20,16 +20,16 @@ module.exports.register = async (req, res) => {
     });
   }
 
-  // hash password
-  const salt = await bcrypt.genSalt();
-  const hashedPassword = await bcrypt.hash(req.body.password, salt);
+  // for now not hashing passwords
+  // const salt = await bcrypt.genSalt();
+  // const hashedPassword = await bcrypt.hash(req.body.password, salt);
 
   const user = new User({
     first_name: req.body.first_name,
     last_name: req.body.last_name,
     username: req.body.username,
     email: req.body.email,
-    password: hashedPassword,
+    password: req.body.passwords,
   });
 
   user.save((err, savedUser) => {
