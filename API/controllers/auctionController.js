@@ -4,10 +4,17 @@ const { authorize } = require("../routes/protectedRoute");
 module.exports.getAuctions = async (req, res) => {
   try {
     let searchQuery = req.query.search;
+    let skip = req.query.skip;
+    let limit = req.query.limit;
+    let sort;
+    let direction;
+
+    !req.query.sort ? (sort = "created_at") : (sort = req.query.sort);
+    !req.query.direction ? (direction = -1) : (direction = req.query.direction);
 
     // TODO: add sorting by the number of bids and other params
 
-    if (searchQuery) {
+    if (searchQuery.length === 0) {
       const auctions = await Auction.aggregate([
         [
           {
@@ -36,8 +43,14 @@ module.exports.getAuctions = async (req, res) => {
               ],
             },
           },
+          {
+            $skip: parseInt(skip, 10),
+          },
+          {
+            $limit: parseInt(limit, 10),
+          },
         ],
-      ]);
+      ]).sort({ sort: direction });
 
       res.status(200).json(auctions);
     } else {
