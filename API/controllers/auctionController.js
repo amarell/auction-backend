@@ -14,47 +14,8 @@ module.exports.getAuctions = async (req, res) => {
 
     // TODO: add sorting by the number of bids and other params
 
-    if (searchQuery.length === 0) {
-      const auctions = await Auction.aggregate([
-        [
-          {
-            $lookup: {
-              from: "bids",
-              localField: "bids",
-              foreignField: "_id",
-              as: "bids",
-            },
-          },
-          {
-            $match: {
-              $or: [
-                {
-                  item_name: {
-                    $regex: searchQuery,
-                    $options: "i",
-                  },
-                },
-                {
-                  item_description: {
-                    $regex: searchQuery,
-                    $options: "i",
-                  },
-                },
-              ],
-            },
-          },
-          {
-            $skip: parseInt(skip, 10),
-          },
-          {
-            $limit: parseInt(limit, 10),
-          },
-        ],
-      ]).sort({ sort: direction });
-
-      res.status(200).json(auctions);
-    } else {
-      const auctions = await Auction.aggregate([
+    const auctions = await Auction.aggregate([
+      [
         {
           $lookup: {
             from: "bids",
@@ -63,10 +24,34 @@ module.exports.getAuctions = async (req, res) => {
             as: "bids",
           },
         },
-      ]).sort({ created_at: -1 });
+        {
+          $match: {
+            $or: [
+              {
+                item_name: {
+                  $regex: searchQuery,
+                  $options: "i",
+                },
+              },
+              {
+                item_description: {
+                  $regex: searchQuery,
+                  $options: "i",
+                },
+              },
+            ],
+          },
+        },
+        {
+          $skip: parseInt(skip, 10),
+        },
+        {
+          $limit: parseInt(limit, 10),
+        },
+      ],
+    ]).sort({ sort: direction });
 
-      res.status(200).json(auctions);
-    }
+    res.status(200).json(auctions);
   } catch (error) {
     res.status(400).json(error);
   }
