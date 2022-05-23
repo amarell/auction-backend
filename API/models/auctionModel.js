@@ -7,6 +7,7 @@ let auctionSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  initial_price: Number,
   pictures: [
     {
       img_url: String,
