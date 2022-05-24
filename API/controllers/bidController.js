@@ -2,11 +2,41 @@ const Bid = require("../models/bidModel");
 const Auction = require("../models/auctionModel");
 const { authorize } = require("../routes/protectedRoute");
 const jwt = require("../utilities/jwt");
+const mongoose = require("mongoose");
 
 const findAuctionAndAddBidToIt = async (id, bid) => {
-  const auction = await Auction.findById(id);
+  const auction = await Auction.aggregate([
+    [
+      {
+        $lookup: {
+          from: "bids",
+          localField: "bids",
+          foreignField: "_id",
+          as: "bids",
+        },
+      },
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(id),
+        },
+      },
+    ],
+  ]).limit(1);
 
-  const bids = auction.bids;
+  const bids = auction[0].bids;
+
+  if (bids.length === 0) {
+    if (bid.price <= auction.initial_price) {
+      return {
+        error: "Your bid has to be greater than the initial price",
+      };
+    }
+  } else if (bid.price <= bids[bids.length - 1].price) {
+    return {
+      error: "Your bid has to be greater than the current price",
+    };
+  }
+
   bids.push(bid);
 
   const update = await Auction.findByIdAndUpdate(
@@ -33,11 +63,20 @@ module.exports.postBid = async (req, res) => {
   });
 
   const savedBid = await bid.save();
-  const auction = await findAuctionAndAddBidToIt(req.body.auction_id, savedBid);
+  const response = await findAuctionAndAddBidToIt(
+    req.body.auction_id,
+    savedBid
+  );
 
-  if (auction) {
-    res.json({
-      auction,
+  if (response.error) {
+    return res.status(400).json({
+      error: response.error,
+    });
+  }
+
+  if (response) {
+    return res.json({
+      response,
     });
   }
 };
