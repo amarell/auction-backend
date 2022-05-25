@@ -24,6 +24,14 @@ let auctionSchema = new mongoose.Schema({
       ref: "Bid",
     },
   ],
+  created_by: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
+  expired: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 let Auction = mongoose.model("Auction", auctionSchema);

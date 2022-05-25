@@ -118,6 +118,27 @@ module.exports.getActiveAuctions = async (req, res) => {
   }
 };
 
+module.exports.getAuctionById = (req, res) => {
+  let id = req.params.id;
+  Auction.findById(id, (err, auction) => {
+    if (err) {
+      res.status(400).json({
+        error: "Something went wrong!",
+      });
+    } else {
+      if (auction === null) {
+        return res.status(400).json({
+          error: "No such auction!",
+        });
+      }
+      return res.status(200).json({
+        status: "Sucess",
+        data: auction,
+      });
+    }
+  });
+};
+
 module.exports.postAuction = (req, res) => {
   let auth = authorize(req);
   if (auth === false) {
@@ -129,6 +150,7 @@ module.exports.postAuction = (req, res) => {
     item_description: req.body.item_description,
     date_ends: req.body.date_ends,
     initial_price: req.body.initial_price,
+    created_by: req.body.created_by,
   });
 
   const savedAuction = auction.save((err, savedAuction) => {

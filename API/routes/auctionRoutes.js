@@ -6,6 +6,8 @@ router
   .get(auctionController.getAuctions)
   .post(auctionController.postAuction);
 
+router.route("/auctions/:id").get(auctionController.getAuctionById);
+
 router.route("/active-auctions").get(auctionController.getActiveAuctions);
 
 module.exports = router;

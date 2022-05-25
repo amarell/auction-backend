@@ -1,8 +1,10 @@
 const User = require("../models/userModel");
+const Auction = require("../models/auctionModel");
 const { registerValidation, loginValidation } = require("./../../validation");
 const bcrypt = require("bcryptjs");
 const jwt = require("./../utilities/jwt");
 const { authorize } = require("../routes/protectedRoute");
+const mongoose = require("mongoose");
 
 module.exports.register = async (req, res) => {
   // validate data
@@ -93,4 +95,50 @@ module.exports.getUsers = (req, res) => {
       });
     }
   });
+};
+
+module.exports.getUserById = (req, res) => {
+  let id = req.params.id;
+  User.findById(id, (err, user) => {
+    if (err) {
+      res.status(400).json({
+        error: "Something went wrong!",
+      });
+    } else if (user === null) {
+      return res.status(400).json({
+        error: "No such user!",
+      });
+    } else {
+      let response = user;
+      console.log(response);
+      delete response.password;
+      console.log(response);
+
+      return res.status(200).json({
+        status: "Sucess",
+        data: response,
+      });
+    }
+  });
+};
+
+module.exports.getUserAuctions = async (req, res) => {
+  let id = req.params.user_id;
+
+  try {
+    let auctions = await Auction.aggregate([
+      {
+        $match: {
+          created_by: new mongoose.Types.ObjectId(id),
+        },
+      },
+    ]);
+
+    res.status(200).json({
+      auctions,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({ error });
+  }
 };
