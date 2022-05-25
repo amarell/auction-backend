@@ -57,7 +57,7 @@ module.exports.postBid = async (req, res) => {
   const token = jwt.verify(req.headers.authorization);
 
   const bid = new Bid({
-    price: req.body.price,
+    price: parseFloat(req.body.price),
     created_by: token.uid,
     auction_id: req.body.auction_id,
   });
