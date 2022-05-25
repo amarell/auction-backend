@@ -110,9 +110,9 @@ module.exports.getUserById = (req, res) => {
       });
     } else {
       let response = user;
-      console.log(response);
-      delete response.password;
-      console.log(response);
+      // console.log(response);
+      // delete response.password;
+      // console.log(response);
 
       return res.status(200).json({
         status: "Sucess",
