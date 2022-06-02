@@ -31,7 +31,7 @@ module.exports.register = async (req, res) => {
     last_name: req.body.last_name,
     username: req.body.username,
     email: req.body.email,
-    password: req.body.passwords,
+    password: req.body.password,
   });
 
   user.save((err, savedUser) => {
@@ -62,7 +62,8 @@ module.exports.login = async (req, res) => {
     });
   }
 
-  const validPassword = await bcrypt.compare(req.body.password, user.password);
+  // const validPassword = await bcrypt.compare(req.body.password, user.password);
+  const validPassword = req.body.password === user.password;
 
   if (!validPassword) {
     return res.status(400).json({
@@ -81,7 +82,7 @@ module.exports.login = async (req, res) => {
 module.exports.getUsers = (req, res) => {
   let auth = authorize(req);
   if (auth === false) {
-    return res.status(401).json("Access denied");
+    return res.status(401).json({ status: "Access Denied!" });
   }
   User.find((err, users) => {
     if (err) {
@@ -109,14 +110,66 @@ module.exports.getUserById = (req, res) => {
         error: "No such user!",
       });
     } else {
-      let response = user;
-      // console.log(response);
-      // delete response.password;
-      // console.log(response);
+      const keys = [
+        "first_name",
+        "last_name",
+        "username",
+        "profile_picture",
+        "bio",
+        "email",
+        "role",
+        "created_at",
+      ];
+
+      let result = {};
+      for (const key of keys) {
+        result[key] = user[key];
+      }
 
       return res.status(200).json({
         status: "Sucess",
-        data: response,
+        data: result,
+      });
+    }
+  });
+};
+
+module.exports.updateUser = async (req, res) => {
+  let id = req.params.id;
+  let auth = authorize(req, id, req.headers.authorization);
+  if (auth === false) {
+    return res.status(401).json({ status: "Access Denied!" });
+  }
+
+  User.findByIdAndUpdate(id, req.body, { new: true }, (err, user) => {
+    if (err) {
+      res.status(400).json({
+        error: "Something went wrong!",
+      });
+    } else if (user === null) {
+      res.status(400).json({
+        error: "User not found!",
+      });
+    } else {
+      const keys = [
+        "first_name",
+        "last_name",
+        "username",
+        "profile_picture",
+        "bio",
+        "email",
+        "role",
+        "created_at",
+      ];
+
+      let result = {};
+      for (const key of keys) {
+        result[key] = user[key];
+      }
+
+      res.status(200).json({
+        status: "Success",
+        updatedUser: result,
       });
     }
   });
