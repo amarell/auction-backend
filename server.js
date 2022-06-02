@@ -2,6 +2,7 @@ let express = require("express");
 let mongoose = require("mongoose");
 let port = process.env.PORT || 3000;
 let config = require("./config.js");
+let http = require("http");
 let cors = require("cors");
 require("dotenv").config();
 
@@ -21,15 +22,31 @@ app.use(
   })
 );
 
-app.listen(port, function () {
-  console.log("Listening on port " + port);
-});
-
 // Here we will add all the routes!
 app.use("/api", authRoutes);
 app.use("/api", userRoutes);
 app.use("/api", auctionRoutes);
 app.use("/api", bidRoutes);
+
+const server = http.createServer(app);
+const { Server } = require("socket.io");
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+  },
+});
+
+io.on("connection", (socket) => {
+  console.log("user connected");
+
+  socket.on("disconnect", () => {
+    console.log("User disconnected");
+  });
+});
+
+server.listen(port, function () {
+  console.log("Listening on port " + port);
+});
 
 const mongo = mongoose.connect(process.env.DB_PATH, config.DB_OPTIONS);
 
