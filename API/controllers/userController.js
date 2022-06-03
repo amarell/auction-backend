@@ -111,6 +111,7 @@ module.exports.getUserById = (req, res) => {
       });
     } else {
       const keys = [
+        "_id",
         "first_name",
         "last_name",
         "username",
@@ -152,6 +153,7 @@ module.exports.updateUser = async (req, res) => {
       });
     } else {
       const keys = [
+        "_id",
         "first_name",
         "last_name",
         "username",
