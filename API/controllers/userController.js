@@ -37,7 +37,7 @@ module.exports.register = async (req, res) => {
   user.save((err, savedUser) => {
     if (err) {
       res.status(400).json({
-        status: "Something went wrong",
+        error: "Something went wrong",
       });
     } else {
       res.status(200).json({
@@ -74,7 +74,6 @@ module.exports.login = async (req, res) => {
   const token = jwt.sign(user);
 
   res.header("authorization", token).status(200).json({
-    status: "Success",
     token,
   });
 };
@@ -82,7 +81,7 @@ module.exports.login = async (req, res) => {
 module.exports.getUsers = (req, res) => {
   let auth = authorize(req);
   if (auth === false) {
-    return res.status(401).json({ status: "Access Denied!" });
+    return res.status(401).json({ error: "Access Denied!" });
   }
   User.find((err, users) => {
     if (err) {
@@ -91,7 +90,6 @@ module.exports.getUsers = (req, res) => {
       });
     } else {
       res.status(200).json({
-        status: "Sucess",
         data: users,
       });
     }
@@ -128,7 +126,6 @@ module.exports.getUserById = (req, res) => {
       }
 
       return res.status(200).json({
-        status: "Sucess",
         data: result,
       });
     }
@@ -139,7 +136,7 @@ module.exports.updateUser = async (req, res) => {
   let id = req.params.id;
   let auth = authorize(req, id, req.headers.authorization);
   if (auth === false) {
-    return res.status(401).json({ status: "Access Denied!" });
+    return res.status(401).json({ error: "Access Denied!" });
   }
 
   User.findByIdAndUpdate(id, req.body, { new: true }, (err, user) => {
@@ -170,7 +167,6 @@ module.exports.updateUser = async (req, res) => {
       }
 
       res.status(200).json({
-        status: "Success",
         updatedUser: result,
       });
     }
@@ -193,7 +189,6 @@ module.exports.getUserAuctions = async (req, res) => {
       auctions,
     });
   } catch (error) {
-    console.log(error);
-    return res.status(400).json({ error });
+    return res.status(400).json({ error: error });
   }
 };

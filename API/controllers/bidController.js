@@ -51,7 +51,7 @@ const findAuctionAndAddBidToIt = async (id, bid) => {
 module.exports.postBid = async (req, res) => {
   let auth = authorize(req);
   if (auth === false) {
-    return res.status(401).json("Access denied");
+    return res.status(401).json({ error: "Access denied" });
   }
 
   const token = jwt.verify(req.headers.authorization);

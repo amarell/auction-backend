@@ -1,4 +1,5 @@
 const Auction = require("../models/auctionModel");
+const jwt = require("jsonwebtoken");
 const { authorize } = require("../routes/protectedRoute");
 
 module.exports.getAuctions = async (req, res) => {
@@ -53,7 +54,7 @@ module.exports.getAuctions = async (req, res) => {
 
     res.status(200).json(auctions);
   } catch (error) {
-    res.status(400).json(error);
+    res.status(400).json({ error: error });
   }
 };
 
@@ -114,7 +115,7 @@ module.exports.getActiveAuctions = async (req, res) => {
 
     res.status(200).json(auctions);
   } catch (error) {
-    res.status(400).json(error);
+    res.status(400).json({ error: error });
   }
 };
 
@@ -132,7 +133,6 @@ module.exports.getAuctionById = (req, res) => {
         });
       }
       return res.status(200).json({
-        status: "Sucess",
         data: auction,
       });
     }
@@ -142,7 +142,7 @@ module.exports.getAuctionById = (req, res) => {
 module.exports.postAuction = (req, res) => {
   let auth = authorize(req);
   if (auth === false) {
-    return res.status(401).json("Access denied");
+    return res.status(401).json({ error: "Access denied" });
   }
 
   const auction = new Auction({
@@ -156,7 +156,7 @@ module.exports.postAuction = (req, res) => {
   const savedAuction = auction.save((err, savedAuction) => {
     if (err) {
       res.status(400).json({
-        status: "Something went wrong",
+        error: err,
       });
     } else {
       res.status(200).json({
@@ -164,4 +164,45 @@ module.exports.postAuction = (req, res) => {
       });
     }
   });
+};
+
+module.exports.updateAuction = async (req, res) => {
+  let auth = authorize(req);
+  if (auth === false) {
+    return res.status(401).json({ error: "Access denied" });
+  }
+
+  let id = req.params.id;
+
+  try {
+    let auction = await Auction.findById(id);
+    if (auction === null) {
+      res.status(400).json({ error: "No such auction!" });
+    } else {
+      if (
+        auction.created_by.toString() !==
+        jwt.decode(req.headers.authorization).uid
+      ) {
+        return res.status(401).json({ error: "Access denied" });
+      } else {
+        Auction.findByIdAndUpdate(
+          id,
+          req.body,
+          { new: true },
+          (err, updatedAuction) => {
+            if (err) {
+              return res.status(400).json({ error: "Something went wrong" });
+            } else {
+              return res.status(200).json({ data: updatedAuction });
+            }
+          }
+        );
+
+        res.status(200).json(auction);
+      }
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(400).json({ error: err });
+  }
 };
