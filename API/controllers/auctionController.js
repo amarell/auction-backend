@@ -172,6 +172,10 @@ module.exports.updateAuction = async (req, res) => {
     return res.status(401).json({ error: "Access denied" });
   }
 
+  if (req.body.date_ends) {
+    return res.status(400).json({ error: "You can't change the ending time" });
+  }
+
   let id = req.params.id;
 
   try {
