@@ -197,8 +197,6 @@ module.exports.updateAuction = async (req, res) => {
             }
           }
         );
-
-        res.status(200).json(auction);
       }
     }
   } catch (err) {
