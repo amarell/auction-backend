@@ -22,5 +22,18 @@ const loginValidation = (data) => {
   return schema.validate(data);
 };
 
+const newAuctionValidation = (data) => {
+  const schema = Joi.object({
+    created_by: Joi.string().required(),
+    item_name: Joi.string().required(),
+    item_description: Joi.string().required(),
+    date_ends: Joi.string().required(),
+    initial_price: Joi.string().required(),
+  });
+
+  return schema.validate(data);
+};
+
 module.exports.registerValidation = registerValidation;
 module.exports.loginValidation = loginValidation;
+module.exports.newAuctionValidation = newAuctionValidation;

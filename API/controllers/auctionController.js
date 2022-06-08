@@ -1,6 +1,7 @@
 const Auction = require("../models/auctionModel");
 const jwt = require("jsonwebtoken");
 const { authorize } = require("../routes/protectedRoute");
+const { newAuctionValidation } = require("./../../validation");
 
 module.exports.getAuctions = async (req, res) => {
   try {
@@ -143,6 +144,11 @@ module.exports.postAuction = (req, res) => {
   let auth = authorize(req);
   if (auth === false) {
     return res.status(401).json({ error: "Access denied" });
+  }
+
+  const { error } = newAuctionValidation(req.body);
+  if (error) {
+    return res.status(400).json({ error: error.details[0].message });
   }
 
   const auction = new Auction({
