@@ -29,6 +29,7 @@ const newAuctionValidation = (data) => {
     item_description: Joi.string().required(),
     date_ends: Joi.string().required(),
     initial_price: Joi.string().required(),
+    pictures: Joi.array(),
   });
 
   return schema.validate(data);

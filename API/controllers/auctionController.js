@@ -157,6 +157,7 @@ module.exports.postAuction = (req, res) => {
     date_ends: req.body.date_ends,
     initial_price: req.body.initial_price,
     created_by: req.body.created_by,
+    pictures: req.body.pictures,
   });
 
   const savedAuction = auction.save((err, savedAuction) => {
