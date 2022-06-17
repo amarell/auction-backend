@@ -120,24 +120,23 @@ module.exports.getActiveAuctions = async (req, res) => {
   }
 };
 
-module.exports.getAuctionById = (req, res) => {
+module.exports.getAuctionById = async (req, res) => {
   let id = req.params.id;
-  Auction.findById(id, (err, auction) => {
-    if (err) {
-      res.status(400).json({
-        error: "Something went wrong!",
-      });
-    } else {
-      if (auction === null) {
-        return res.status(400).json({
-          error: "No such auction!",
-        });
-      }
-      return res.status(200).json({
-        data: auction,
+  try {
+    const auction = await Auction.findById(id).populate("bids");
+    if (auction === null) {
+      return res.status(400).json({
+        error: "No such auction!",
       });
     }
-  });
+    return res.status(200).json({
+      data: auction,
+    });
+  } catch (err) {
+    return res.status(400).json({
+      error: "Something went wrong!",
+    });
+  }
 };
 
 module.exports.postAuction = (req, res) => {
