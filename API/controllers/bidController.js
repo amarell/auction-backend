@@ -84,3 +84,22 @@ module.exports.postBid = async (req, res) => {
     });
   }
 };
+
+module.exports.getBid = async (req, res) => {
+  const bid_id = req.params.id;
+
+  Bid.findById(bid_id, (error, bid) => {
+    if (error) {
+      return res.status(400).json({
+        error: "Something went wrong",
+      });
+    } else if (bid === null) {
+      return res.status(400).json({
+        error: "No such bid!",
+      });
+    }
+    return res.status(200).json({
+      bid,
+    });
+  });
+};
