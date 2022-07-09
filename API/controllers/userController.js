@@ -183,6 +183,11 @@ module.exports.getUserAuctions = async (req, res) => {
           created_by: new mongoose.Types.ObjectId(id),
         },
       },
+      {
+        $sort: {
+          date_ends: -1,
+        },
+      },
     ]);
 
     res.status(200).json({
