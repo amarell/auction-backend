@@ -184,6 +184,14 @@ module.exports.getUserAuctions = async (req, res) => {
         },
       },
       {
+        $lookup: {
+          from: "bids",
+          localField: "bids",
+          foreignField: "_id",
+          as: "bids",
+        },
+      },
+      {
         $sort: {
           date_ends: -1,
         },
