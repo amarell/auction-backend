@@ -1,5 +1,6 @@
 const User = require("../models/userModel");
 const Auction = require("../models/auctionModel");
+const Bid = require("../models/bidModel");
 const { registerValidation, loginValidation } = require("./../../validation");
 const bcrypt = require("bcryptjs");
 const jwt = require("./../utilities/jwt");
@@ -175,31 +176,72 @@ module.exports.updateUser = async (req, res) => {
 
 module.exports.getUserAuctions = async (req, res) => {
   let id = req.params.user_id;
+  let pipeline = [
+    {
+      $match: {
+        created_by: new mongoose.Types.ObjectId(id),
+      },
+    },
+    {
+      $lookup: {
+        from: "bids",
+        localField: "bids",
+        foreignField: "_id",
+        as: "bids",
+      },
+    },
+    {
+      $sort: {
+        date_ends: -1,
+      },
+    },
+  ];
 
   try {
-    let auctions = await Auction.aggregate([
-      {
-        $match: {
-          created_by: new mongoose.Types.ObjectId(id),
-        },
-      },
-      {
-        $lookup: {
-          from: "bids",
-          localField: "bids",
-          foreignField: "_id",
-          as: "bids",
-        },
-      },
-      {
-        $sort: {
-          date_ends: -1,
-        },
-      },
-    ]);
+    let auctions = await Auction.aggregate(pipeline);
 
     res.status(200).json({
       auctions,
+    });
+  } catch (error) {
+    return res.status(400).json({ error: error });
+  }
+};
+
+module.exports.getUserBids = async (req, res) => {
+  let id = req.params.user_id;
+
+  let pipeline = [
+    {
+      $match: {
+        created_by: new mongoose.Types.ObjectId(id),
+      },
+    },
+    {
+      $lookup: {
+        from: "auctions",
+        localField: "auction_id",
+        foreignField: "_id",
+        as: "auction",
+      },
+    },
+    {
+      $unwind: {
+        path: "$auction",
+      },
+    },
+    {
+      $sort: {
+        date_created: -1,
+      },
+    },
+  ];
+
+  try {
+    let bids = await Bid.aggregate(pipeline);
+
+    res.status(200).json({
+      bids,
     });
   } catch (error) {
     return res.status(400).json({ error: error });
