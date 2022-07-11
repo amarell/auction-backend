@@ -73,7 +73,7 @@ module.exports.getActiveAuctions = async (req, res) => {
 
     !req.query.direction
       ? (sort.direction = -1)
-      : (sort.direction = req.query.direction);
+      : (sort.direction = parseInt(req.query.direction));
 
     let sortQuery = {};
 
@@ -112,6 +112,15 @@ module.exports.getActiveAuctions = async (req, res) => {
                 },
               },
             ],
+          },
+        },
+        {
+          $addFields: {
+            bid_count: {
+              $size: {
+                $ifNull: ["$bids", []],
+              },
+            },
           },
         },
         {
