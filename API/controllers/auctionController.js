@@ -64,11 +64,20 @@ module.exports.getActiveAuctions = async (req, res) => {
     let searchQuery = req.query.search;
     let skip = req.query.skip;
     let limit = req.query.limit;
-    let sort;
-    let direction;
 
-    !req.query.sort ? (sort = "created_at") : (sort = req.query.sort);
-    !req.query.direction ? (direction = -1) : (direction = req.query.direction);
+    let sort = {};
+
+    !req.query.sort
+      ? (sort.field = "created_at")
+      : (sort.field = req.query.sort);
+
+    !req.query.direction
+      ? (sort.direction = -1)
+      : (sort.direction = req.query.direction);
+
+    let sortQuery = {};
+
+    sortQuery[sort.field] = sort.direction;
 
     // TODO: add sorting by the number of bids and other params
 
@@ -111,8 +120,11 @@ module.exports.getActiveAuctions = async (req, res) => {
         {
           $limit: parseInt(limit, 10),
         },
+        {
+          $sort: sortQuery,
+        },
       ],
-    ]).sort({ sort: direction });
+    ]);
 
     res.status(200).json(auctions);
   } catch (error) {
