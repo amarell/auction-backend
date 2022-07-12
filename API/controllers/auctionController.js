@@ -124,6 +124,28 @@ module.exports.getActiveAuctions = async (req, res) => {
           },
         },
         {
+          $addFields: {
+            last_bid: {
+              $cond: {
+                if: {
+                  $eq: [[], "$bids"],
+                },
+                then: {
+                  price: "$initial_price",
+                },
+                else: {
+                  $last: "$bids",
+                },
+              },
+            },
+          },
+        },
+        {
+          $addFields: {
+            current_price: "$last_bid.price",
+          },
+        },
+        {
           $skip: parseInt(skip, 10),
         },
         {
