@@ -41,6 +41,10 @@ global.io = io;
 io.on("connection", (socket) => {
   // console.log("user connected");
 
+  socket.on("open auction", (id) => {
+    socket.join(id);
+  });
+
   socket.on("disconnect", () => {
     // console.log("User disconnected");
   });

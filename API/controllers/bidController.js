@@ -47,7 +47,9 @@ const findAuctionAndAddBidToIt = async (id, bid) => {
 
   const newData = await Auction.findById(id).populate("bids");
 
-  io.emit("postedBid", newData);
+  io.to(id).emit("postedBid", newData);
+
+  // io.emit("postedBid", newData);
 
   return update;
 };
