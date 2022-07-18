@@ -4,6 +4,7 @@ let port = process.env.PORT || 3000;
 let config = require("./config.js");
 let http = require("http");
 let cors = require("cors");
+let updateExpiredAuctions = require("./API/jobs/updateExpiredAuctions");
 require("dotenv").config();
 
 // Import routes here
@@ -55,6 +56,9 @@ server.listen(port, function () {
 });
 
 const mongo = mongoose.connect(process.env.DB_PATH, config.DB_OPTIONS);
+
+// invoke cron tasks here
+updateExpiredAuctions();
 
 mongo
   .then(() => {

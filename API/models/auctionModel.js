@@ -32,6 +32,10 @@ let auctionSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  won_by: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
 });
 
 let Auction = mongoose.model("Auction", auctionSchema);
