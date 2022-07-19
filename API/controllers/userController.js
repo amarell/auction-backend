@@ -174,6 +174,22 @@ module.exports.updateUser = async (req, res) => {
   });
 };
 
+module.exports.getUsersWonAuctions = async (req, res) => {
+  let id = req.params.user_id;
+
+  try {
+    let won_auctions = await Auction.find({
+      won_by: new mongoose.Types.ObjectId(id),
+    }).sort({ date_ends: -1 });
+
+    if (won_auctions) {
+      return res.status(200).json({ won_auctions });
+    }
+  } catch (err) {
+    return res.status(400).json({ error: err });
+  }
+};
+
 module.exports.getUserAuctions = async (req, res) => {
   let id = req.params.user_id;
   let pipeline = [
