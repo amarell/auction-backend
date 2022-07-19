@@ -2,6 +2,7 @@ var cron = require("node-cron");
 const Auction = require("../models/auctionModel");
 const Bid = require("../models/bidModel");
 const mongoose = require("mongoose");
+const User = require("../models/userModel");
 
 const updateExpiredAuctions = async () => {
   cron.schedule("*/5 * * * * *", async () => {
@@ -36,6 +37,12 @@ const updateExpiredAuctions = async () => {
 
         if (last_bid) {
           console.log(last_bid);
+
+          let winner = await User.findOne({
+            _id: new mongoose.Types.ObjectId(last_bid.created_by),
+          });
+
+          io.to(auction._id).emit("auction expired", winner.username);
 
           Auction.updateOne(
             {
