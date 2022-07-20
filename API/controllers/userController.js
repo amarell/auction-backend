@@ -180,7 +180,9 @@ module.exports.getUsersWonAuctions = async (req, res) => {
   try {
     let won_auctions = await Auction.find({
       won_by: new mongoose.Types.ObjectId(id),
-    }).sort({ date_ends: -1 });
+    })
+      .populate("bids")
+      .sort({ date_ends: -1 });
 
     if (won_auctions) {
       return res.status(200).json({ won_auctions });
