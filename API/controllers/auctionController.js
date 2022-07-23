@@ -77,6 +77,12 @@ module.exports.getActiveAuctions = async (req, res) => {
 
     let sortQuery = {};
 
+    let $match = { date_ends: { $gt: new Date() } };
+
+    if (req.query.category) {
+      $match.category = req.query.category;
+    }
+
     sortQuery[sort.field] = sort.direction;
 
     // TODO: add sorting by the number of bids and other params
@@ -92,9 +98,7 @@ module.exports.getActiveAuctions = async (req, res) => {
           },
         },
         {
-          $match: {
-            date_ends: { $gt: new Date() },
-          },
+          $match,
         },
         {
           $match: {
