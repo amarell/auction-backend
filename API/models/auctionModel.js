@@ -36,6 +36,10 @@ let auctionSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
+  category: {
+    type: String,
+    default: "",
+  },
 });
 
 let Auction = mongoose.model("Auction", auctionSchema);

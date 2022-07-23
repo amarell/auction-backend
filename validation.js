@@ -30,6 +30,7 @@ const newAuctionValidation = (data) => {
     date_ends: Joi.string().required(),
     initial_price: Joi.string().required(),
     pictures: Joi.array(),
+    category: Joi.string(),
   });
 
   return schema.validate(data);

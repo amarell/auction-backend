@@ -200,6 +200,7 @@ module.exports.postAuction = (req, res) => {
     initial_price: req.body.initial_price,
     created_by: req.body.created_by,
     pictures: req.body.pictures,
+    category: req.body.category,
   });
 
   const savedAuction = auction.save((err, savedAuction) => {
