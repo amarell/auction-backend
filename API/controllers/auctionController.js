@@ -79,7 +79,7 @@ module.exports.getActiveAuctions = async (req, res) => {
 
     let $match = { date_ends: { $gt: new Date() } };
 
-    if (req.query.category) {
+    if (req.query.category && req.query.category !== "All") {
       $match.category = req.query.category;
     }
 
