@@ -66,6 +66,10 @@ module.exports.getActiveAuctions = async (req, res) => {
     let limit = req.query.limit;
 
     let sort = {};
+    let price_range = {
+      from: 0,
+      to: undefined,
+    };
 
     !req.query.sort
       ? (sort.field = "created_at")
@@ -74,6 +78,14 @@ module.exports.getActiveAuctions = async (req, res) => {
     !req.query.direction
       ? (sort.direction = -1)
       : (sort.direction = parseInt(req.query.direction));
+
+    !req.query.from
+      ? (price_range.from = 0)
+      : (price_range.from = parseInt(req.query.from));
+
+    !req.query.to
+      ? (price_range.to = Infinity)
+      : (price_range.to = parseInt(req.query.to));
 
     let sortQuery = {};
 
@@ -147,6 +159,11 @@ module.exports.getActiveAuctions = async (req, res) => {
         {
           $addFields: {
             current_price: "$last_bid.price",
+          },
+        },
+        {
+          $match: {
+            current_price: { $gte: price_range.from, $lt: price_range.to },
           },
         },
         {
