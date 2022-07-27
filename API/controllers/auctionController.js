@@ -95,6 +95,10 @@ module.exports.getActiveAuctions = async (req, res) => {
       $match.category = req.query.category;
     }
 
+    if (req.query.to === "10000") {
+      price_range.to = Infinity;
+    }
+
     sortQuery[sort.field] = sort.direction;
 
     // TODO: add sorting by the number of bids and other params
