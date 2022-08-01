@@ -171,13 +171,13 @@ module.exports.getActiveAuctions = async (req, res) => {
           },
         },
         {
+          $sort: sortQuery,
+        },
+        {
           $skip: parseInt(skip, 10),
         },
         {
           $limit: parseInt(limit, 10),
-        },
-        {
-          $sort: sortQuery,
         },
       ],
     ]);
