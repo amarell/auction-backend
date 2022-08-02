@@ -42,7 +42,7 @@ module.exports.register = async (req, res) => {
       });
     } else {
       res.status(200).json({
-        user: savedUser._id,
+        token: jwt.sign(savedUser),
       });
     }
   });
