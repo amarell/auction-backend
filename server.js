@@ -12,6 +12,7 @@ let authRoutes = require("./API/routes/auth.js");
 let userRoutes = require("./API/routes/userRoutes.js");
 let auctionRoutes = require("./API/routes/auctionRoutes.js");
 let bidRoutes = require("./API/routes/bidRoutes.js");
+let ratingRoutes = require("./API/routes/ratingRoutes.js");
 
 const app = express();
 
@@ -28,6 +29,7 @@ app.use("/api", authRoutes);
 app.use("/api", userRoutes);
 app.use("/api", auctionRoutes);
 app.use("/api", bidRoutes);
+app.use("/api", ratingRoutes);
 
 const server = http.createServer(app);
 const { Server } = require("socket.io");
